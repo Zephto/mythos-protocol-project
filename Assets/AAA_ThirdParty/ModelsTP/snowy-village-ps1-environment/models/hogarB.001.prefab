@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3277083406671026119}
   - component: {fileID: 6426151627824573938}
   - component: {fileID: 4648970852888419236}
+  - component: {fileID: 4843169099478917145}
   m_Layer: 0
   m_Name: hogarB.001
   m_TagString: Untagged
@@ -86,3 +87,24 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!65 &4843169099478917145
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7663515838916441834}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.103500806, y: 0.08175054, z: 0.037396025}
+  m_Center: {x: 0.00037857052, y: 0.02990212, z: 0.019999996}
