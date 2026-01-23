@@ -5220,7 +5220,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healtBar: {fileID: 1879508874}
-  textLife: {fileID: 209275560}
+  textLife: {fileID: 2018717877}
   gunBoxes:
   - {fileID: 5968622370755919396}
   - {fileID: 1034866973}
@@ -10132,7 +10132,7 @@ MonoBehaviour:
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 0
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0

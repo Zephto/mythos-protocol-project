@@ -8,6 +8,8 @@ public class HUD_Game : MonoBehaviour
 	[Header("Health references")]
 	[SerializeField] private Image healtBar;
 	[SerializeField] private TextMeshProUGUI textLife;
+	private int TESTcurrentLife;
+	private int TESTtotalLife;
 
 	[Header("Guns selector references")]
 	///<summary>
@@ -27,6 +29,10 @@ public class HUD_Game : MonoBehaviour
 
 	private void Start()
 	{
+		TESTtotalLife = 100;
+		TESTcurrentLife = TESTtotalLife;
+		UpdateHealthBar();
+
 		currentGunSelected = 0;
 		totalFireBullets = 10;
 		totalIceBullets = 25;
@@ -47,9 +53,24 @@ public class HUD_Game : MonoBehaviour
 
 			SelectGun(currentGunSelected);
 		}
+
+		if (Input.GetKeyDown(KeyCode.Space))
+		{
+			TESTcurrentLife -= 15;
+			if(TESTcurrentLife <= 0) TESTcurrentLife = 0;
+
+			UpdateHealthBar();
+		}
 	}
 
 	#region Private Methods
+	private void UpdateHealthBar()
+	{
+		healtBar.fillAmount = (float)TESTcurrentLife / (float)TESTtotalLife;
+
+		textLife.text = string.Format("{0}/{1}", TESTcurrentLife, TESTtotalLife);
+	}
+
 	private void SelectGun(int selection)
 	{
 		for(int i=0; i<gunBoxes.Count; i++)
