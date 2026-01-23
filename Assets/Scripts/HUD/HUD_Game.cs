@@ -25,7 +25,8 @@ public class HUD_Game : MonoBehaviour
 	private int totalIceBullets;
 
 	[Header("Inventory references")]
-	[SerializeField] private Image imageContainer;
+	[SerializeField] private Image inventoryImage;
+	private GameObject inventoryObject;
 
 	private void Start()
 	{
@@ -38,6 +39,9 @@ public class HUD_Game : MonoBehaviour
 		totalIceBullets = 25;
 		SelectGun(currentGunSelected);
 		UpdateGunValues();
+
+		inventoryObject = null;
+		inventoryImage.gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -62,6 +66,29 @@ public class HUD_Game : MonoBehaviour
 			UpdateHealthBar();
 		}
 	}
+
+	#region Public Methods
+	public void AddToInventory(GameObject iObject)
+	{
+		if(inventoryObject != null)
+		{
+			Debug.Log("You have an item already!! You cannot grab another one.");
+			return;
+		}
+
+		inventoryObject = iObject;
+		inventoryImage.sprite = iObject.GetComponent<Item>().GetSprite();
+		inventoryImage.gameObject.SetActive(true);
+	}
+
+	public GameObject UseInventory()
+	{
+		inventoryImage.gameObject.SetActive(false);
+		GameObject savedObject = inventoryObject;
+		inventoryObject = null;
+		return savedObject;
+	}
+	#endregion
 
 	#region Private Methods
 	private void UpdateHealthBar()

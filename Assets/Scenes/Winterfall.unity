@@ -5226,7 +5226,7 @@ MonoBehaviour:
   - {fileID: 1034866973}
   - {fileID: 1839172345}
   - {fileID: 1721090733}
-  imageContainer: {fileID: 824467318}
+  inventoryImage: {fileID: 824467318}
 --- !u!1001 &945544227
 PrefabInstance:
   m_ObjectHideFlags: 0
