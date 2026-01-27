@@ -28,6 +28,6 @@ public class StoneShardsAI : MonoBehaviour
     {
         activated = true;
         Vector2 dir = (player.position - transform.position).normalized;
-        GetComponent<Rigidbody2D>().velocity = dir * attackSpeed;
+        GetComponent<Rigidbody2D>().linearVelocity = dir * attackSpeed;
     }
 }
