@@ -68,7 +68,7 @@ public class HUD_Game : MonoBehaviour
 	}
 
 	#region Public Methods
-	public void AddToInventory(GameObject iObject)
+	public void AddToInventory(Sprite iSprite)
 	{
 		if(inventoryObject != null)
 		{
@@ -76,8 +76,7 @@ public class HUD_Game : MonoBehaviour
 			return;
 		}
 
-		inventoryObject = iObject;
-		inventoryImage.sprite = iObject.GetComponent<Item>().GetSprite();
+		inventoryImage.sprite = iSprite;
 		inventoryImage.gameObject.SetActive(true);
 	}
 
@@ -87,6 +86,11 @@ public class HUD_Game : MonoBehaviour
 		GameObject savedObject = inventoryObject;
 		inventoryObject = null;
 		return savedObject;
+	}
+
+	public bool CheckInventory()
+	{
+		return !inventoryImage.gameObject.activeSelf;
 	}
 	#endregion
 
