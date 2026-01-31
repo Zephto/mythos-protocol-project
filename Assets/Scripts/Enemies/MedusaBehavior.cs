@@ -1,25 +1,13 @@
 using UnityEngine;
 
+/// <summary>
+/// Enemigo definido en documentación.
+/// No se utiliza en la versión actual del prototipo.
+/// </summary>
 public class MedusaBehavior : EnemyBase
 {
-    public TrapController[] traps;
-
-    protected override void Update()
+    protected override void Attack()
     {
-        base.Update();
-
-        if (playerDetected)
-            ControlTraps();
-    }
-
-    void ControlTraps()
-    {
-        foreach (var trap in traps)
-        {
-            if (Random.value > 0.5f)
-                trap.Activate();
-            else
-                trap.Deactivate();
-        }
+        // No implementado en esta versión
     }
 }

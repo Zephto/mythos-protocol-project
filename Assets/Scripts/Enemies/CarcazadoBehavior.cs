@@ -2,39 +2,52 @@ using UnityEngine;
 
 public class CarcazadoBehavior : EnemyBase
 {
-    public float speed = 4f;
-    public float wanderSpeed = 1.5f;
+    public float attackRange = 2f;
+    public float paralyzeTime = 0.8f;
+    public float pushForce = 8f;
+    public float attackCooldown = 1.5f;
 
-    private Vector2 wanderDirection;
-    private float changeDirTime = 2f;
     private float timer;
+    private PlayerStatus playerStatus;
 
-    protected override void Update()
+    protected override void OnDetectPlayer()
     {
-        base.Update();
+        if (player == null) return;
 
-        if (playerDetected)
-            ChasePlayer();
-        else
-            Wander();
-    }
-
-    void ChasePlayer()
-    {
-        Vector2 dir = (player.position - transform.position).normalized;
-        dir += Random.insideUnitCircle * 0.3f; // errático
-        transform.Translate(dir * speed * Time.deltaTime);
-    }
-
-    void Wander()
-    {
-        timer -= Time.deltaTime;
-        if (timer <= 0)
+        if (playerStatus == null)
         {
-            wanderDirection = Random.insideUnitCircle.normalized;
-            timer = changeDirTime;
+            playerStatus = player.GetComponent<PlayerStatus>();
+
+            if (playerStatus == null)
+                playerStatus = player.GetComponentInChildren<PlayerStatus>();
         }
 
-        transform.Translate(wanderDirection * wanderSpeed * Time.deltaTime);
+        timer -= Time.deltaTime;
+
+        float dist = Vector3.Distance(transform.position, player.position);
+        if (dist <= attackRange && timer <= 0)
+        {
+            Attack();
+            timer = attackCooldown;
+        }
+    }
+
+    protected override void Attack()
+    {
+        if (playerStatus != null)
+        {
+            playerStatus.ApplyParalysis(paralyzeTime);
+        }
+        else
+        {
+            Debug.LogWarning("PlayerStatus no encontrado en el Player");
+        }
+
+        Rigidbody rbPlayer = player.GetComponent<Rigidbody>();
+        if (rbPlayer != null)
+        {
+            Vector3 dir = (player.position - transform.position).normalized;
+            rbPlayer.AddForce(dir * pushForce, ForceMode.Impulse);
+        }
     }
 }

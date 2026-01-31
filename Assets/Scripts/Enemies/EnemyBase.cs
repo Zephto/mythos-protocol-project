@@ -6,27 +6,14 @@ public abstract class EnemyBase : MonoBehaviour
     public float maxHealth = 100f;
     protected float currentHealth;
 
-    [Header("Detection")]
-    public float detectionRange = 5f;
     protected Transform player;
+    protected EnemyMovement movement;
 
-    protected bool playerDetected;
-
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         currentHealth = maxHealth;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-    }
-
-    protected virtual void Update()
-    {
-        DetectPlayer();
-    }
-
-    protected void DetectPlayer()
-    {
-        float distance = Vector2.Distance(transform.position, player.position);
-        playerDetected = distance <= detectionRange;
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        movement = GetComponent<EnemyMovement>();
     }
 
     public virtual void TakeDamage(float damage)
@@ -39,5 +26,21 @@ public abstract class EnemyBase : MonoBehaviour
     protected virtual void Die()
     {
         Destroy(gameObject);
+    }
+
+    // Eventos para habilidades
+    protected virtual void OnDetectPlayer() { }
+    protected virtual void OnLosePlayer() { }
+
+    protected abstract void Attack();
+
+    protected virtual void Update()
+    {
+        if (!player || movement == null) return;
+
+        if (movement.PlayerDetected)
+            OnDetectPlayer();
+        else
+            OnLosePlayer();
     }
 }
