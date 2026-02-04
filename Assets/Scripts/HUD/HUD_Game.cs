@@ -28,6 +28,10 @@ public class HUD_Game : MonoBehaviour
 	[SerializeField] private Image inventoryImage;
 	private GameObject inventoryObject;
 
+
+	#region public references
+	#endregion
+
 	private void Start()
 	{
 		TESTtotalLife = 100;
@@ -58,34 +62,35 @@ public class HUD_Game : MonoBehaviour
 			SelectGun(currentGunSelected);
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			TESTcurrentLife -= 15;
-			if(TESTcurrentLife <= 0) TESTcurrentLife = 0;
+		// if (Input.GetKeyDown(KeyCode.Space))
+		// {
+		// 	TESTcurrentLife -= 15;
+		// 	if(TESTcurrentLife <= 0) TESTcurrentLife = 0;
 
-			UpdateHealthBar();
-		}
+		// 	UpdateHealthBar();
+		// }
 	}
 
 	#region Public Methods
 	public void AddToInventory(Sprite iSprite)
 	{
-		if(inventoryObject != null)
-		{
-			Debug.Log("You have an item already!! You cannot grab another one.");
-			return;
-		}
+		// if(inventoryObject != null)
+		// {
+		// 	Debug.Log("You have an item already!! You cannot grab another one.");
+		// 	return;
+		// }
 
 		inventoryImage.sprite = iSprite;
 		inventoryImage.gameObject.SetActive(true);
 	}
 
-	public GameObject UseInventory()
+	public Sprite UseInventory()
 	{
 		inventoryImage.gameObject.SetActive(false);
-		GameObject savedObject = inventoryObject;
-		inventoryObject = null;
-		return savedObject;
+		inventoryImage.sprite = null;
+		// GameObject savedObject = inventoryObject;
+		// inventoryObject = null;
+		return inventoryImage.sprite;
 	}
 
 	public bool CheckInventory()

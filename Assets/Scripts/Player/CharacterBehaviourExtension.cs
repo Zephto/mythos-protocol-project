@@ -4,25 +4,19 @@ public class CharacterBehaviourExtension : MonoBehaviour
 {
 
     private HUD_Game Hud;
+	private bool isMouseLPressed;
 
 	void Awake()
 	{
 		Hud = FindAnyObjectByType<HUD_Game>();
 	}
 
-	// Start is called once before the first execution of Update after the MonoBehaviour is created
-	void Start()
-    {
-        
-    }
+	void Update()
+	{
+		isMouseLPressed = Input.GetMouseButtonDown(0);
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void OnTriggerEnter(Collider other)
+	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Items"))
 		{
@@ -31,7 +25,23 @@ public class CharacterBehaviourExtension : MonoBehaviour
                 Hud.AddToInventory(other.GetComponent<Item>().GetSprite());
 			    Destroy(other.gameObject);
             }
+		}
 
+		
+	}
+
+	void OnTriggerStay(Collider other)
+	{
+		if(!isMouseLPressed) return;
+
+		if (other.TryGetComponent<IInteraction>(out var interaction))
+		{
+			interaction.Interact(Hud.UseInventory());
+			if (Hud.CheckInventory())
+            {
+                Hud.AddToInventory(other.GetComponent<Item>().GetSprite());
+			    Destroy(other.gameObject);
+            }
 		}
 	}
 }
