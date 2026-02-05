@@ -5,8 +5,7 @@ public class Item : MonoBehaviour
 {
 	[Header("Public references")]
 	[SerializeField] private Sprite imageComponent;
-
-	private SpriteRenderer spriteRenderer;
+	[SerializeField] private SpriteRenderer spriteRenderer;
 
 	void Start()
 	{

@@ -87,15 +87,15 @@ public class HUD_Game : MonoBehaviour
 	public Sprite UseInventory()
 	{
 		inventoryImage.gameObject.SetActive(false);
+		Sprite savedSprite = inventoryImage.sprite;
 		inventoryImage.sprite = null;
-		// GameObject savedObject = inventoryObject;
 		// inventoryObject = null;
-		return inventoryImage.sprite;
+		return savedSprite;
 	}
 
 	public bool CheckInventory()
 	{
-		return !inventoryImage.gameObject.activeSelf;
+		return inventoryImage.gameObject.activeSelf;
 	}
 	#endregion
 

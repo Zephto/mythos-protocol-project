@@ -172,6 +172,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   imageComponent: {fileID: 21300000, guid: 3f0304f9482e53d46af479e4465b5ac7, type: 3}
+  spriteRenderer: {fileID: 2170007074230443223}
 --- !u!1 &8009563134194824937
 GameObject:
   m_ObjectHideFlags: 0

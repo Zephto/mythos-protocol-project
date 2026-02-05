@@ -20,14 +20,12 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	{
 		if (other.CompareTag("Items"))
 		{
-            if (Hud.CheckInventory())
+            if (!Hud.CheckInventory())
             {
                 Hud.AddToInventory(other.GetComponent<Item>().GetSprite());
 			    Destroy(other.gameObject);
             }
 		}
-
-		
 	}
 
 	void OnTriggerStay(Collider other)
@@ -36,11 +34,10 @@ public class CharacterBehaviourExtension : MonoBehaviour
 
 		if (other.TryGetComponent<IInteraction>(out var interaction))
 		{
-			interaction.Interact(Hud.UseInventory());
+			Debug.Log("Check inventory: " + Hud.CheckInventory());
 			if (Hud.CheckInventory())
             {
-                Hud.AddToInventory(other.GetComponent<Item>().GetSprite());
-			    Destroy(other.gameObject);
+				interaction.Interact(Hud.UseInventory());
             }
 		}
 	}
