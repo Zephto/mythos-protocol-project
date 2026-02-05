@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using QRCodeShareMain;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class QRGenerator : MonoBehaviour, IInteraction
 {
@@ -12,11 +13,14 @@ public class QRGenerator : MonoBehaviour, IInteraction
 	[SerializeField] private MeshRenderer targetRenderer;
 	private Material runtimeMaterial;
 	private Texture2D currentQRCodeGenerate = null;
+	private string currentPath;
 
 	[Header("Item sprite reference")]
 	[SerializeField] private List<GameObject> visualObjects = new List<GameObject>();
 	[SerializeField] private Sprite spriteRef;
 	private List<GameObject> objects = new List<GameObject>();
+
+	public UnityEvent<string> OnQRGenerated = new UnityEvent<string>();
 
 	void Start()
 	{
@@ -28,8 +32,9 @@ public class QRGenerator : MonoBehaviour, IInteraction
 		{
 			obj.SetActive(false);
 		}
-
-		currentQRCodeGenerate = HelloWorldQRCode(NewRandomPath());
+		
+		currentPath = NewRandomPath();
+		currentQRCodeGenerate = HelloWorldQRCode(currentPath);
 	}
 
 	#region Public Methods
@@ -72,6 +77,7 @@ public class QRGenerator : MonoBehaviour, IInteraction
 
 		targetRenderer.gameObject.SetActive(true);
         runtimeMaterial.mainTexture = qrTexture;
+		OnQRGenerated?.Invoke(currentPath);
 	}
 
 	private string NewRandomPath()

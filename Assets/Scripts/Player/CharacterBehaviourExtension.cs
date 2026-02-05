@@ -38,7 +38,11 @@ public class CharacterBehaviourExtension : MonoBehaviour
 			if (Hud.CheckInventory())
             {
 				interaction.Interact(Hud.UseInventory());
-            }
+			}
+			else
+			{
+				interaction.Interact(null);
+			}
 		}
 	}
 }
