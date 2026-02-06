@@ -7,6 +7,7 @@ public class TombPuzzle : MonoBehaviour
 {
 	[Header("Public references")]
 	[SerializeField] private QRGenerator qrGenerator;
+	[SerializeField] private GameObject prize;
 	[SerializeField] private List<SingleTombDetector> tombDetectors = new List<SingleTombDetector>();
 
 	private int[] sequence;
@@ -14,6 +15,7 @@ public class TombPuzzle : MonoBehaviour
 
 	void Start()
 	{
+		prize.gameObject.SetActive(false);
 		foreach(SingleTombDetector tomb in tombDetectors)
 		{
 			tomb.SetVisibleSphere(false);
@@ -53,6 +55,12 @@ public class TombPuzzle : MonoBehaviour
 			if(currentIndex >= sequence.Length)
 			{
 				Debug.Log("Codigo correcto, soltar premio!!");
+
+				prize.gameObject.SetActive(true);
+				foreach(SingleTombDetector tomb in tombDetectors)
+				{
+					tomb.gameObject.SetActive(false);
+				}
 			}
 		}
 		else

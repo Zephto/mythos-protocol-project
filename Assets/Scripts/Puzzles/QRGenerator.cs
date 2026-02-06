@@ -20,7 +20,7 @@ public class QRGenerator : MonoBehaviour, IInteraction
 	[SerializeField] private Sprite spriteRef;
 	private List<GameObject> objects = new List<GameObject>();
 
-	public UnityEvent<string> OnQRGenerated = new UnityEvent<string>();
+	[HideInInspector] public UnityEvent<string> OnQRGenerated = new UnityEvent<string>();
 
 	void Start()
 	{
@@ -53,6 +53,7 @@ public class QRGenerator : MonoBehaviour, IInteraction
 		if(objects.Count >= 3)
 		{
 			Debug.Log("Imprimir QR");
+			Debug.Log("Contraseña: " + currentPath);
 			SetVisibleSphere(false);
 			ShowQR(currentQRCodeGenerate);
 		}
