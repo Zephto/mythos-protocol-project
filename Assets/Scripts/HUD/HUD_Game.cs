@@ -5,135 +5,131 @@ using System.Collections.Generic;
 
 public class HUD_Game : MonoBehaviour
 {
-	[Header("Health references")]
-	[SerializeField] private Image healtBar;
-	[SerializeField] private TextMeshProUGUI textLife;
-	private int TESTcurrentLife;
-	private int TESTtotalLife;
+    [Header("Health references")]
+    [SerializeField] private Image healtBar;
+    [SerializeField] private TextMeshProUGUI textLife;
+    private int TESTcurrentLife;
+    private int TESTtotalLife;
 
-	[Header("Guns selector references")]
-	///<summary>
-	/// Each space represent one type of gun:
-	/// 1. None | Interaction
-	/// 2. Normal
-	/// 3. Fire
-	/// 4. Ice
-	///</summary>
-	[SerializeField] private List<HUD_GunBox> gunBoxes = new List<HUD_GunBox>();
-	private int currentGunSelected;
-	private int totalFireBullets;
-	private int totalIceBullets;
+    [Header("Guns selector references")]
+    ///<summary>
+    /// Each space represent one type of gun:
+    /// 1. None | Interaction
+    /// 2. Normal
+    /// 3. Fire
+    /// 4. Ice
+    ///</summary>
+    [SerializeField] private List<HUD_GunBox> gunBoxes = new List<HUD_GunBox>();
+    private int currentGunSelected;
+    private int totalFireBullets;
+    private int totalIceBullets;
 
-	[Header("Inventory references")]
-	[SerializeField] private Image inventoryImage;
-	private GameObject inventoryObject;
+    [Header("Inventory references")]
+    [SerializeField] private Image inventoryImage;
+    private GameObject inventoryObject;
 
 
-	#region public references
-	#endregion
+    private void Start()
+    {
+        TESTtotalLife = 100;
+        TESTcurrentLife = TESTtotalLife;
+        UpdateHealthBar();
 
-	private void Start()
-	{
-		TESTtotalLife = 100;
-		TESTcurrentLife = TESTtotalLife;
-		UpdateHealthBar();
+        currentGunSelected = 0;
+        totalFireBullets = 10;
+        totalIceBullets = 25;
+        SelectGun(currentGunSelected);
+        UpdateGunValues();
 
-		currentGunSelected = 0;
-		totalFireBullets = 10;
-		totalIceBullets = 25;
-		SelectGun(currentGunSelected);
-		UpdateGunValues();
+        inventoryObject = null;
+        inventoryImage.gameObject.SetActive(false);
+    }
 
-		inventoryObject = null;
-		inventoryImage.gameObject.SetActive(false);
-	}
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            currentGunSelected++;
 
-	private void Update()
-	{
-		if (Input.GetMouseButtonDown(1))
-		{
-			currentGunSelected++;
+            if (currentGunSelected >= gunBoxes.Count)
+            {
+                currentGunSelected = 0;
+            }
 
-			if(currentGunSelected >= gunBoxes.Count)
-			{
-				currentGunSelected = 0;
-			}
+            SelectGun(currentGunSelected);
+        }
+    }
 
-			SelectGun(currentGunSelected);
-		}
+    #region Public Methods
 
-		// if (Input.GetKeyDown(KeyCode.Space))
-		// {
-		// 	TESTcurrentLife -= 15;
-		// 	if(TESTcurrentLife <= 0) TESTcurrentLife = 0;
+    public void SetHealth(int current, int total)
+    {
+        TESTcurrentLife = current;
+        TESTtotalLife = total;
+        UpdateHealthBar();
+    }
 
-		// 	UpdateHealthBar();
-		// }
-	}
+    public void AddToInventory(Sprite iSprite)
+    {
+        inventoryImage.sprite = iSprite;
+        inventoryImage.gameObject.SetActive(true);
+    }
 
-	#region Public Methods
-	public void AddToInventory(Sprite iSprite)
-	{
-		// if(inventoryObject != null)
-		// {
-		// 	Debug.Log("You have an item already!! You cannot grab another one.");
-		// 	return;
-		// }
+    public Sprite UseInventory()
+    {
+        inventoryImage.gameObject.SetActive(false);
+        Sprite savedSprite = inventoryImage.sprite;
+        inventoryImage.sprite = null;
+        return savedSprite;
+    }
 
-		inventoryImage.sprite = iSprite;
-		inventoryImage.gameObject.SetActive(true);
-	}
+    public bool CheckInventory()
+    {
+        return inventoryImage.gameObject.activeSelf;
+    }
 
-	public Sprite UseInventory()
-	{
-		inventoryImage.gameObject.SetActive(false);
-		Sprite savedSprite = inventoryImage.sprite;
-		inventoryImage.sprite = null;
-		// inventoryObject = null;
-		return savedSprite;
-	}
+    #endregion
 
-	public bool CheckInventory()
-	{
-		return inventoryImage.gameObject.activeSelf;
-	}
-	#endregion
 
-	#region Private Methods
-	private void UpdateHealthBar()
-	{
-		healtBar.fillAmount = (float)TESTcurrentLife / (float)TESTtotalLife;
+    #region Private Methods
 
-		textLife.text = string.Format("{0}/{1}", TESTcurrentLife, TESTtotalLife);
-	}
+    private void UpdateHealthBar()
+    {
+        if (healtBar != null)
+            healtBar.fillAmount = (float)TESTcurrentLife / (float)TESTtotalLife;
 
-	private void SelectGun(int selection)
-	{
-		for(int i=0; i<gunBoxes.Count; i++)
-		{
-			gunBoxes[i].Select( selection == i );
-		}
-	}
+        if (textLife != null)
+            textLife.text = string.Format("{0}/{1}", TESTcurrentLife, TESTtotalLife);
+    }
 
-	private void UpdateGunValues()
-	{
-		for(int i=0; i<gunBoxes.Count; i++)
-		{
-			switch (i)
-			{
-				case 2: // Fire value
-				gunBoxes[i].SetValue(totalFireBullets.ToString());
-				break;
+    private void SelectGun(int selection)
+    {
+        for (int i = 0; i < gunBoxes.Count; i++)
+        {
+            gunBoxes[i].Select(selection == i);
+        }
+    }
 
-				case 3: //Ice value
-				gunBoxes[i].SetValue(totalIceBullets.ToString());
-				break;
+    private void UpdateGunValues()
+    {
+        for (int i = 0; i < gunBoxes.Count; i++)
+        {
+            switch (i)
+            {
+                case 2:
+                    gunBoxes[i].SetValue(totalFireBullets.ToString());
+                    break;
 
-				default:
-				gunBoxes[i].SetValue("-");
-				break;
-			}
-		}
-	}
-	#endregion
+                case 3:
+                    gunBoxes[i].SetValue(totalIceBullets.ToString());
+                    break;
+
+                default:
+                    gunBoxes[i].SetValue("-");
+                    break;
+            }
+        }
+    }
+
+    #endregion
 }

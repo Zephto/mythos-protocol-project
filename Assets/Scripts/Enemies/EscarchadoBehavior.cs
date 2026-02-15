@@ -1,75 +1,153 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class EscarchadoBehaviour : MonoBehaviour
 {
-    public GameObject enemyBody;
-    public GameObject fogObject;
+    [Header("VISUALES")]
+    public GameObject physicalVisual;
+    public GameObject fogVisual;
 
-    public float timeToFog = 5f;
-    public float slowAmount = 0.5f;
+    [Header("DETECCION")]
+    public float detectionDistance = 10f;
+    public float timeToFog = 3f;
+
+    [Header("ATAQUE")]
+    public float attackInterval = 2f;
+
+    [Range(0, 1)] public float slowChance = 0.7f;
+    [Range(0, 1)] public float damageChance = 0.3f;
+
+    [Header("SLOW")]
+    public float slowMultiplier = 0.5f;
     public float slowDuration = 2f;
 
-    bool playerInside;
-    bool isInFog;
+    [Header("DAÑO")]
+    public int damageAmount = 10;
+
+    bool isInFog = true;
+    Transform player;
+    PlayerStatus playerStatus;
+
+    Coroutine attackRoutine;
     Coroutine fogRoutine;
 
+    // =====================================================
     void Start()
     {
-        enemyBody.SetActive(true);
-        fogObject.SetActive(false);
+        player = GameObject.FindGameObjectWithTag("Player")?.transform;
+        EnterFogImmediate();
     }
 
-    void OnTriggerEnter(Collider other)
+    // =====================================================
+    void Update()
     {
-        PlayerStatus ps = other.GetComponentInParent<PlayerStatus>();
-        if (ps == null) return;
+        if (!player) return;
 
-        playerInside = true;
+        float dist = Vector3.Distance(transform.position, player.position);
 
-        ps.ApplySlow(slowAmount, slowDuration);
-
-        if (fogRoutine != null)
+        // ===== DETECT PLAYER =====
+        if (dist <= detectionDistance)
         {
-            StopCoroutine(fogRoutine);
-            fogRoutine = null;
+            if (isInFog)
+                ExitFog();
+
+            if (attackRoutine == null)
+            {
+                playerStatus = player.GetComponent<PlayerStatus>();
+                attackRoutine = StartCoroutine(AttackLoop());
+            }
+
+            if (fogRoutine != null)
+            {
+                StopCoroutine(fogRoutine);
+                fogRoutine = null;
+            }
         }
+        // ===== PLAYER LOST =====
+        else
+        {
+            if (!isInFog && fogRoutine == null)
+                fogRoutine = StartCoroutine(FogDelay());
 
-        if (isInFog)
-            ExitFog();
+            if (attackRoutine != null)
+            {
+                StopCoroutine(attackRoutine);
+                attackRoutine = null;
+            }
+        }
     }
 
-    void OnTriggerExit(Collider other)
+    // =====================================================
+    IEnumerator AttackLoop()
     {
-        if (other.GetComponentInParent<PlayerStatus>() == null) return;
+        while (!isInFog && playerStatus != null)
+        {
+            yield return new WaitForSeconds(attackInterval);
 
-        playerInside = false;
+            float roll = Random.value;
 
-        if (!isInFog && fogRoutine == null)
-            fogRoutine = StartCoroutine(FogDelay());
+            // =========================
+            // SLOW
+            // =========================
+            if (roll <= slowChance)
+            {
+                Debug.Log(
+                    "ESCARCHADO APLICA SLOW → x" +
+                    slowMultiplier +
+                    " durante " +
+                    slowDuration + "s"
+                );
+
+                playerStatus.ApplySlow(slowMultiplier, slowDuration);
+            }
+            // =========================
+            // DAMAGE
+            // =========================
+            else if (roll <= slowChance + damageChance)
+            {
+                Debug.Log("ESCARCHADO HACE DAÑO: " + damageAmount);
+                playerStatus.TakeDamage(damageAmount);
+            }
+        }
     }
 
+    // =====================================================
     IEnumerator FogDelay()
     {
         yield return new WaitForSeconds(timeToFog);
-
-        if (!playerInside)
-            EnterFog();
-
+        EnterFog();
         fogRoutine = null;
+    }
+
+    // =====================================================
+    void EnterFogImmediate()
+    {
+        isInFog = true;
+        physicalVisual.SetActive(false);
+        fogVisual.SetActive(true);
+
+        Debug.Log("ESCARCHADO INICIA EN FOG");
     }
 
     void EnterFog()
     {
+        if (isInFog) return;
+
         isInFog = true;
-        enemyBody.SetActive(false);
-        fogObject.SetActive(true);
+        physicalVisual.SetActive(false);
+        fogVisual.SetActive(true);
+
+        Debug.Log("ESCARCHADO VUELVE A FOG");
     }
 
     void ExitFog()
     {
+        if (!isInFog) return;
+
         isInFog = false;
-        fogObject.SetActive(false);
-        enemyBody.SetActive(true);
+        fogVisual.SetActive(false);
+        physicalVisual.SetActive(true);
+
+        Debug.Log("ESCARCHADO SALE DE FOG Y ATACA");
     }
 }

@@ -19,6 +19,7 @@ public abstract class EnemyBase : MonoBehaviour
     public virtual void TakeDamage(float damage)
     {
         currentHealth -= damage;
+
         if (currentHealth <= 0)
             Die();
     }
@@ -28,7 +29,6 @@ public abstract class EnemyBase : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Eventos para habilidades
     protected virtual void OnDetectPlayer() { }
     protected virtual void OnLosePlayer() { }
 

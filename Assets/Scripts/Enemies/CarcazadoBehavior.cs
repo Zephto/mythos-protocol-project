@@ -1,53 +1,108 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class CarcazadoBehavior : EnemyBase
 {
+    [Header("Attack Settings")]
     public float attackRange = 2f;
-    public float paralyzeTime = 0.8f;
-    public float pushForce = 8f;
     public float attackCooldown = 1.5f;
+    public float attackStopTime = 0.8f;
+
+    [Header("Damage")]
+    public int damage = 10;
+
+    [Header("Paralysis")]
+    public float paralyzeTime = 1f;
+    [Range(0f, 1f)] public float paralyzeChance = 0.25f;
+
+    [Header("Push")]
+    public float pushForce = 10f;
+    [Range(0f, 1f)] public float pushChance = 0.35f;
 
     private float timer;
+    private bool isAttacking;
+
     private PlayerStatus playerStatus;
+    private Rigidbody playerRb;
 
-    protected override void OnDetectPlayer()
+    protected override void Awake()
     {
-        if (player == null) return;
+        base.Awake();
 
-        if (playerStatus == null)
+        if (player != null)
         {
             playerStatus = player.GetComponent<PlayerStatus>();
-
-            if (playerStatus == null)
-                playerStatus = player.GetComponentInChildren<PlayerStatus>();
+            playerRb = player.GetComponent<Rigidbody>();
         }
+    }
+    protected override void OnDetectPlayer()
+    {
+        if (player == null || isAttacking) return;
 
         timer -= Time.deltaTime;
 
         float dist = Vector3.Distance(transform.position, player.position);
+
         if (dist <= attackRange && timer <= 0)
         {
-            Attack();
+            StartCoroutine(AttackRoutine());
             timer = attackCooldown;
         }
+    }
+    IEnumerator AttackRoutine()
+    {
+        isAttacking = true;
+
+        if (movement != null)
+            movement.enabled = false;
+
+        Attack();
+
+        yield return new WaitForSeconds(attackStopTime);
+
+        if (movement != null)
+            movement.enabled = true;
+
+        isAttacking = false;
     }
 
     protected override void Attack()
     {
-        if (playerStatus != null)
+        if (playerStatus == null)
         {
-            playerStatus.ApplyParalysis(paralyzeTime);
-        }
-        else
-        {
-            Debug.LogWarning("PlayerStatus no encontrado en el Player");
+            Debug.LogWarning("PlayerStatus no encontrado");
+            return;
         }
 
-        Rigidbody rbPlayer = player.GetComponent<Rigidbody>();
-        if (rbPlayer != null)
+        playerStatus.TakeDamage(damage);
+        Debug.Log("Carcazado → DAMAGE");
+
+        float roll = Random.value;
+
+        if (roll < paralyzeChance)
         {
-            Vector3 dir = (player.position - transform.position).normalized;
-            rbPlayer.AddForce(dir * pushForce, ForceMode.Impulse);
+            playerStatus.ApplyParalysis(paralyzeTime);
+            Debug.Log("Carcazado → PARALYSIS");
+            return;
         }
+
+        if (roll < paralyzeChance + pushChance)
+        {
+            ApplyPush();
+            Debug.Log("Carcazado → PUSH");
+            return;
+        }
+
+        Debug.Log("Carcazado → SOLO DAMAGE");
+    }
+
+    void ApplyPush()
+    {
+        if (playerRb == null) return;
+
+        Vector3 dir = (player.position - transform.position).normalized;
+        dir.y = 0f;
+
+        playerRb.AddForce(dir * pushForce, ForceMode.Impulse);
     }
 }
