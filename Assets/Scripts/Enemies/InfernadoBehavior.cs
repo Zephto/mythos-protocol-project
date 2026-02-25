@@ -1,39 +1,130 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
 
 public class InfernadoBehavior : EnemyBase
 {
-    public Transform[] fireNodes;
-    public float pushForce = 6f;
-    public float attackRange = 7f;
+    [Header("VISUALES (ARRASTRA 'Visuals')")]
+    public Transform visualsContainer;
+
+    GameObject physicalVisual;
+    GameObject elementalVisual;
+
+    [Header("RANGO")]
+    public float attackRange = 8f;
     public float attackCooldown = 2f;
+    public float timeToElemental = 3f;
+
+    [Header("FUEGO")]
+    public GameObject fireballPrefab;
+    public Transform firePoint;
+    public float fireballForce = 12f;
 
     float timer;
+    bool isElemental = true;
+    Coroutine elementalRoutine;
+
+    void Start()
+    {
+        physicalVisual = visualsContainer.Find("Physical")?.gameObject;
+        elementalVisual = visualsContainer.Find("Elemental")?.gameObject;
+
+        EnterElementalImmediate();
+    }
 
     protected override void OnDetectPlayer()
     {
         timer -= Time.deltaTime;
 
         float dist = Vector3.Distance(transform.position, player.position);
-        if (dist <= attackRange && timer <= 0)
+
+        if (dist <= attackRange)
         {
-            Attack();
-            timer = attackCooldown;
+            if (isElemental)
+                ExitElemental();
+
+            if (timer <= 0)
+            {
+                Attack();
+                timer = attackCooldown;
+            }
+
+            if (elementalRoutine != null)
+            {
+                StopCoroutine(elementalRoutine);
+                elementalRoutine = null;
+            }
+        }
+        else
+        {
+            if (!isElemental && elementalRoutine == null)
+                elementalRoutine = StartCoroutine(ReturnToElemental());
         }
     }
 
     protected override void Attack()
     {
-        Rigidbody rbPlayer = player.GetComponent<Rigidbody>();
-        if (rbPlayer != null)
+        if (fireballPrefab == null || firePoint == null) return;
+
+        GameObject fireball = Instantiate(
+            fireballPrefab,
+            firePoint.position,
+            Quaternion.identity
+        );
+
+        Vector3 dir = (player.position - firePoint.position).normalized;
+
+        Rigidbody rb = fireball.GetComponent<Rigidbody>();
+        if (rb != null)
         {
-            Vector3 dir = (player.position - transform.position).normalized;
-            rbPlayer.AddForce(dir * pushForce, ForceMode.Impulse);
+            rb.AddForce(dir * fireballForce, ForceMode.Impulse);
         }
 
-        if (fireNodes != null && fireNodes.Length > 0)
-        {
-            Transform node = fireNodes[Random.Range(0, fireNodes.Length)];
-            transform.position = node.position;
-        }
+        Destroy(fireball, 5f); // limpia después de 5 segundos
+    }
+
+    IEnumerator ReturnToElemental()
+    {
+        yield return new WaitForSeconds(timeToElemental);
+        EnterElemental();
+        elementalRoutine = null;
+    }
+
+    void EnterElementalImmediate()
+    {
+        isElemental = true;
+        SetRenderersActive(physicalVisual, false);
+        SetRenderersActive(elementalVisual, true);
+    }
+
+    void EnterElemental()
+    {
+        if (isElemental) return;
+
+        isElemental = true;
+
+        SetRenderersActive(physicalVisual, false);
+        SetRenderersActive(elementalVisual, true);
+
+        Debug.Log("🔥 INFERNADO vuelve a forma elemental");
+    }
+
+    void ExitElemental()
+    {
+        if (!isElemental) return;
+
+        isElemental = false;
+
+        SetRenderersActive(elementalVisual, false);
+        SetRenderersActive(physicalVisual, true);
+
+        Debug.Log("👁 INFERNADO toma forma física");
+    }
+
+    void SetRenderersActive(GameObject obj, bool state)
+    {
+        Renderer[] rends = obj.GetComponentsInChildren<Renderer>(true);
+
+        foreach (Renderer r in rends)
+            r.enabled = state;
     }
 }
