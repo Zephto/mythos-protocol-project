@@ -1,14 +1,37 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterBehaviourExtension : MonoBehaviour
 {
 
+	#region public variables
+	[SerializeField] private int currentGunSelection = 0;
+	[SerializeField] private List<GameObject> GunsObjects; //Aqui puedes cambiar el Gameobject por el tipo de arma para accionarla por una funcion generica
+	[SerializeField] private Animator gunAnimator;
+	#endregion
+
+	#region private variables
     private HUD_Game Hud;
 	private bool isMouseLPressed;
+	private IEnumerator currentGunCoroutine;
+	#endregion
+
 
 	void Awake()
 	{
 		Hud = FindAnyObjectByType<HUD_Game>();
+		currentGunCoroutine = null;
+	}
+
+	void Start()
+	{
+		Hud.OnGunChange.AddListener((value) => ChangeGun(value));
+		foreach(GameObject gun in GunsObjects)
+		{
+			gun.SetActive(false);
+		}
+	
 	}
 
 	void Update()
@@ -16,12 +39,46 @@ public class CharacterBehaviourExtension : MonoBehaviour
 		isMouseLPressed = Input.GetMouseButtonDown(0);
 	}
 
+	#region Private Methods
+	private void ChangeGun(int value)
+	{
+		currentGunSelection = value;
+		if(currentGunCoroutine != null){
+			StopCoroutine(currentGunCoroutine);
+			currentGunCoroutine = null;
+		}
+
+		currentGunCoroutine = ChangeGunCoroutine(value);
+		StartCoroutine(currentGunCoroutine);
+	}
+	#endregion
+
+	#region Coroutines
+	private IEnumerator ChangeGunCoroutine(int value)
+	{
+		currentGunSelection = value - 1;
+
+		gunAnimator.SetTrigger("OUT");
+		yield return new WaitForSeconds(0.6f);
+		
+		for(int i=0; i<GunsObjects.Count; i++)
+		{
+			if(currentGunSelection >= 0)
+			{
+				GunsObjects[i].SetActive(i == value);
+			}
+		}
+
+		gunAnimator.SetTrigger("IN");
+	}
+	#endregion
+
+	#region Trigger detection
 	void OnTriggerEnter(Collider other)
 	{
 		if (other.CompareTag("Items"))
 		{
-            if (!Hud.CheckInventory())
-            {
+            if (!Hud.CheckInventory()) {
                 Hud.AddToInventory(other.GetComponent<Item>().GetSprite());
 			    Destroy(other.gameObject);
             }
@@ -31,6 +88,13 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	void OnTriggerStay(Collider other)
 	{
 		if(!isMouseLPressed) return;
+
+
+		if(currentGunSelection != 0)
+		{
+			Debug.Log("No se puede interactuar si tienes un arma");
+			return;
+		}
 
 		if (other.TryGetComponent<IInteraction>(out var interaction))
 		{
@@ -45,4 +109,5 @@ public class CharacterBehaviourExtension : MonoBehaviour
 			}
 		}
 	}
+	#endregion
 }

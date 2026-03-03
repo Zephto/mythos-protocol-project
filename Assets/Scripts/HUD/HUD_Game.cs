@@ -2,6 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 public class HUD_Game : MonoBehaviour
 {
@@ -27,6 +28,8 @@ public class HUD_Game : MonoBehaviour
     [Header("Inventory references")]
     [SerializeField] private Image inventoryImage;
     private GameObject inventoryObject;
+
+    [HideInInspector] public UnityEvent<int> OnGunChange = new UnityEvent<int>();
 
 
     private void Start()
@@ -108,6 +111,9 @@ public class HUD_Game : MonoBehaviour
         {
             gunBoxes[i].Select(selection == i);
         }
+
+        Debug.Log("selectionnnnn gun: " + selection);
+        OnGunChange?.Invoke(selection);
     }
 
     private void UpdateGunValues()
