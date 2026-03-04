@@ -30,6 +30,7 @@ public class HUD_Game : MonoBehaviour
     private GameObject inventoryObject;
 
     [HideInInspector] public UnityEvent<int> OnGunChange = new UnityEvent<int>();
+    [HideInInspector] public UnityEvent OnShoot = new UnityEvent();
 
 
     private void Start()
@@ -60,6 +61,11 @@ public class HUD_Game : MonoBehaviour
             }
 
             SelectGun(currentGunSelected);
+        }
+
+        if (Input.GetMouseButtonDown(0) && currentGunSelected >= 1)
+        {
+            OnShoot?.Invoke();
         }
     }
 

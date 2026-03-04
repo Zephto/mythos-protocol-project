@@ -17,7 +17,6 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	private IEnumerator currentGunCoroutine;
 	#endregion
 
-
 	void Awake()
 	{
 		Hud = FindAnyObjectByType<HUD_Game>();
@@ -27,6 +26,8 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	void Start()
 	{
 		Hud.OnGunChange.AddListener((value) => ChangeGun(value));
+		Hud.OnShoot.AddListener(()=>ShootGun());
+
 		foreach(GameObject gun in GunsObjects)
 		{
 			gun.SetActive(false);
@@ -51,6 +52,11 @@ public class CharacterBehaviourExtension : MonoBehaviour
 		currentGunCoroutine = ChangeGunCoroutine(value);
 		StartCoroutine(currentGunCoroutine);
 	}
+
+	private void ShootGun()
+	{
+		gunAnimator.SetTrigger("SHOOT");
+	}
 	#endregion
 
 	#region Coroutines
@@ -61,11 +67,17 @@ public class CharacterBehaviourExtension : MonoBehaviour
 		gunAnimator.SetTrigger("OUT");
 		yield return new WaitForSeconds(0.6f);
 		
-		for(int i=0; i<GunsObjects.Count; i++)
+		if(currentGunSelection >= 0)
 		{
-			if(currentGunSelection >= 0)
+			for(int i=0; i<GunsObjects.Count; i++) {
+				GunsObjects[i].SetActive(i == currentGunSelection);
+			}
+		}
+		else
+		{
+			foreach(GameObject gun in GunsObjects)
 			{
-				GunsObjects[i].SetActive(i == value);
+				gun.SetActive(false);
 			}
 		}
 

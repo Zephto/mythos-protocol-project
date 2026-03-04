@@ -63,7 +63,7 @@ public class EscarchadoBehaviour : MonoBehaviour
         float dist = Vector3.Distance(transform.position, player.position);
 
         // DEBUG DISTANCIA
-        Debug.Log("Distancia al jugador: " + dist);
+        //Debug.Log("Distancia al jugador: " + dist);
 
         if (dist <= detectionDistance)
         {
