@@ -9,6 +9,7 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	[SerializeField] private int currentGunSelection = 0;
 	[SerializeField] private List<GameObject> GunsObjects; //Aqui puedes cambiar el Gameobject por el tipo de arma para accionarla por una funcion generica
 	[SerializeField] private Animator gunAnimator;
+	[SerializeField] private ParticleSystem fireGunPs;
 	#endregion
 
 	#region private variables
@@ -56,6 +57,7 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	private void ShootGun()
 	{
 		gunAnimator.SetTrigger("SHOOT");
+		fireGunPs.Play();
 	}
 	#endregion
 
