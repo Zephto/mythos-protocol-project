@@ -84,6 +84,7 @@ public class CharacterBehaviourExtension : MonoBehaviour
 		}
 
 		gunAnimator.SetTrigger("IN");
+		if(value == 0) currentGunSelection = 0;
 	}
 	#endregion
 
@@ -103,7 +104,7 @@ public class CharacterBehaviourExtension : MonoBehaviour
 	{
 		if(!isMouseLPressed) return;
 
-
+		Debug.Log("gun: " + currentGunSelection);
 		if(currentGunSelection != 0)
 		{
 			Debug.Log("No se puede interactuar si tienes un arma");
