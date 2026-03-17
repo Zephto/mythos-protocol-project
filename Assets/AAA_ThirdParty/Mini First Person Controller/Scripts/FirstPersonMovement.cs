@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
 [RequireComponent(typeof(Rigidbody))]
-public class FirstPersonMovement : MonoBehaviour
+public class FirstPersonMovement : NetworkBehaviour
 {
     [Header("Walk")]
     public float speed = 5f;
@@ -31,6 +32,8 @@ public class FirstPersonMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         playerStatus = GetComponent<PlayerStatus>();
+        var spawner = FindFirstObjectByType<PlayerSpawner>();
+        transform.position = spawner.GetSpawnPoint();
     }
 
     // =====================================================
@@ -46,6 +49,8 @@ public class FirstPersonMovement : MonoBehaviour
     // =====================================================
     void FixedUpdate()
     {
+        if (!IsOwner) return;
+        
         // ===== PARALISIS =====
         if (playerStatus != null && playerStatus.IsParalyzed)
         {
